@@ -7,21 +7,37 @@ import { SearchParams } from "@/types/searchParams";
 interface SearchFormProps {
   onSearch: (params: SearchParams) => void;
   loading: boolean;
+  onShowAlert: (
+    alert: { type: "success" | "error"; message: string } | null,
+  ) => void;
 }
 
-export default function SearchForm({ onSearch, loading }: SearchFormProps) {
+export default function SearchForm({
+  onSearch,
+  loading,
+  onShowAlert,
+}: SearchFormProps) {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [adults, setAdults] = useState(1);
   const [tripType, setTripType] = useState<"oneWay" | "roundTrip">("roundTrip");
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const localDate =
+    today.getFullYear() +
+    "-" +
+    String(today.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(today.getDate()).padStart(2, "0");
 
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!origin || !destination || !departureDate) {
-      alert("Please fill in all required fields");
+      onShowAlert({
+        type: "error",
+        message: "Please fill in all fields",
+      });
       return;
     }
     onSearch({
@@ -33,7 +49,6 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
     });
   };
 
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -42,7 +57,7 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
         <button
           type="button"
           onClick={() => setTripType("roundTrip")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`cursor-pointer px-4 py-2 rounded-lg font-medium transition-colors ${
             tripType === "roundTrip"
               ? "bg-blue-600 text-white"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -52,7 +67,7 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
         <button
           type="button"
           onClick={() => setTripType("oneWay")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`cursor-pointer px-4 py-2 rounded-lg font-medium transition-colors ${
             tripType === "oneWay"
               ? "bg-blue-600 text-white"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -66,12 +81,14 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
           onChange={(code) => setOrigin(code)}
           placeholder="Where from?"
           label="Origin"
+          onShowAlert={onShowAlert}
         />
         <AirportSearch
           value={destination}
           onChange={(code) => setDestination(code)}
           placeholder="Where to?"
           label="Destination"
+          onShowAlert={onShowAlert}
         />
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -83,7 +100,7 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
               type="date"
               value={departureDate}
               onChange={(e) => setDepartureDate(e.target.value)}
-              min={today}
+              min={localDate}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
             />
           </div>
@@ -99,7 +116,7 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
                 type="date"
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
-                min={departureDate || today}
+                min={departureDate || localDate}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
@@ -111,23 +128,23 @@ export default function SearchForm({ onSearch, loading }: SearchFormProps) {
           </label>
           <div className="relative">
             <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <select
+            <input
+              type="number"
+              min={1}
+              max={9}
               value={adults}
-              onChange={(e) => setAdults(parseInt(e.target.value))}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none appearance-none">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <option key={num} value={num}>
-                  {num} {num === 1 ? "Adult" : "Adults"}
-                </option>
-              ))}
-            </select>
+              onChange={(e) =>
+                setAdults(Math.max(1, Math.min(9, parseInt(e.target.value))))
+              }
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            />
           </div>
         </div>
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+        className={`${loading ? "cursor-not-allowed" : "cursor-pointer"} w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 rounded-lg transition-colors flex items-center justify-center gap-2`}>
         {loading ? (
           <>
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

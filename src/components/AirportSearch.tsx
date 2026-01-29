@@ -8,6 +8,9 @@ interface AirportSearchProps {
   onChange: (value: string, airport: Airport) => void;
   placeholder: string;
   label: string;
+  onShowAlert: (
+    alert: { type: "success" | "error"; message: string } | null,
+  ) => void;
 }
 
 export default function AirportSearch({
@@ -15,6 +18,7 @@ export default function AirportSearch({
   onChange,
   placeholder,
   label,
+  onShowAlert,
 }: AirportSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Airport[]>([]);
@@ -49,6 +53,7 @@ export default function AirportSearch({
         const data = await response.json();
         setResults(data);
       } catch {
+        onShowAlert({ type: "error", message: "Something went wrong" });
         setResults([]);
       } finally {
         setLoading(false);
@@ -92,7 +97,7 @@ export default function AirportSearch({
               <button
                 key={airport.id}
                 onClick={() => handleSelect(airport)}
-                className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b last:border-b-0">
+                className="cursor-pointer w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-b last:border-b-0">
                 <div className="font-medium text-gray-900">
                   {airport.address.cityName} ({airport.iataCode})
                 </div>

@@ -59,7 +59,7 @@ export default function FlightCard({ flight }: FlightCardProps) {
                 {formatDate(firstSegment.departure.at)}
               </div>
             </div>
-            <div className="flex-1 flex flex-col items-center">
+            <div className="flex-1 flex flex-col items-center gap-2">
               <div className="text-sm text-gray-600 mb-1">
                 {parseDuration(outbound.duration)}
               </div>
@@ -99,7 +99,7 @@ export default function FlightCard({ flight }: FlightCardProps) {
             </div>
             <div className="text-sm text-gray-500">per person</div>
           </div>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap">
+          <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap">
             Select Flight
           </button>
         </div>
