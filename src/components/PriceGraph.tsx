@@ -134,12 +134,8 @@ export default function PriceGraph({ flights }: PriceGraphProps) {
                   borderRadius: "8px",
                   padding: "8px 12px",
                 }}
-                formatter={(
-                  value: number,
-                  name: string,
-                  props: { payload: { airline: string } },
-                ) => [
-                  `$${Math.round(value)}`,
+                formatter={(value: number | undefined, name, props) => [
+                  `$${Math.round(value || 0)}`,
                   `Price (${props.payload.airline})`,
                 ]}
               />
@@ -174,8 +170,8 @@ export default function PriceGraph({ flights }: PriceGraphProps) {
                   borderRadius: "8px",
                   padding: "12px",
                 }}
-                formatter={(value: number, name: string) => [
-                  `$${Math.round(value)}`,
+                formatter={(value: number | undefined, name) => [
+                  `$${Math.round(value || 0)}`,
                   name,
                 ]}
               />
